@@ -26,8 +26,15 @@ namespace Core.DAO
                 return _posetioci.Max(p => p.Id) + 1;
         }
 
-        public Posetilac Add(Posetilac posetilac) 
+        public Posetilac? Add(Posetilac posetilac) 
         {
+            bool postoji = _posetioci.Any(p => p.BrojClanskeKarte == posetilac.BrojClanskeKarte);
+
+            if (postoji)
+            {
+                return null;
+            }
+
             posetilac.Id = GenerateId();
             _posetioci.Add(posetilac);
             _storage.Save(_posetioci);

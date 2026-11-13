@@ -27,7 +27,7 @@ namespace Core.DAO
             return _autori.FirstOrDefault(a => a.Id == id);
         }
 
-        public bool Add(Autor noviAutor)
+        public Autor? Add(Autor noviAutor)
         {
             // Proveravamo da li već postoji autor sa istim brojem lične karte
             bool postoji = _autori.Any(a => a.BrojLK == noviAutor.BrojLK);
@@ -35,14 +35,14 @@ namespace Core.DAO
             if (postoji)
             {
                 // Već postoji, ne dozvoljavamo duplikat
-                return false;
+                return null;
             }
 
             // Ako ne postoji, dodeljujemo ID i čuvamo
             noviAutor.Id = GenerateId();
             _autori.Add(noviAutor);
             _storage.Save(_autori);
-            return true;
+            return noviAutor;
         }
 
         public Autor? Update(Autor izmenjeniAutor)
