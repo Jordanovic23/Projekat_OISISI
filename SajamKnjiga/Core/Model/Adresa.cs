@@ -4,6 +4,7 @@ namespace Core.Model
 {
     public class Adresa : ISerializable
     {
+        public int Id { get; set; }
         public string Ulica { get; set; }
         public string Broj { get; set; }
         public string Grad { get; set; }
@@ -11,8 +12,9 @@ namespace Core.Model
 
         public Adresa() { }
 
-        public Adresa(string ulica, string broj, string grad, string drzava)
+        public Adresa(int id, string ulica, string broj, string grad, string drzava)
         {
+            Id = id;
             Ulica = ulica;
             Broj = broj;
             Grad = grad;
@@ -21,23 +23,24 @@ namespace Core.Model
 
         public string ToCSV()
         {
-            return $"{Ulica};{Broj};{Grad};{Drzava}";
+            return $"{Id};{Ulica};{Broj};{Grad};{Drzava}";
         }
 
         public void FromCSV(string[] csvValues)
         {
-            if (csvValues.Length >= 4)
+            if (csvValues.Length >= 5)
             {
-                Ulica = csvValues[0];
-                Broj = csvValues[1];
-                Grad = csvValues[2];
-                Drzava = csvValues[3];
+                Id = int.Parse(csvValues[0]);
+                Ulica = csvValues[1];
+                Broj = csvValues[2];
+                Grad = csvValues[3];
+                Drzava = csvValues[4];
             }
         }
 
         public override string ToString()
         {
-            return $"{Ulica} {Broj}, {Grad}, {Drzava}";
+            return $"[ID: {Id}] {Ulica} {Broj}, {Grad}, {Drzava}";
         }
     }
 }
