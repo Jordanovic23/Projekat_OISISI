@@ -73,5 +73,11 @@ namespace Core.Model
                 }
             }
         }
+        public override string ToString()
+        {
+            return $"[ID: {Id}] {Ime} {Prezime} ({Status}), karta: {BrojClanskeKarte}, " +
+                   $"rođen: {DatumRodjenja:dd.MM.yyyy}, tel: {KontaktTelefon}, email: {Email}, " +
+                   $"lista želja: {ListaZelja.Count} knjiga";
+        }
     }
 }
