@@ -21,7 +21,7 @@ namespace Core.DAO
         private int GenerateId()
         {
             if (_posetioci.Count == 0)
-                return 0;
+                return 1;
             else
                 return _posetioci.Max(p => p.Id) + 1;
         }

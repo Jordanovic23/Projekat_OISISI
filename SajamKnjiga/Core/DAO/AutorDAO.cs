@@ -10,27 +10,27 @@ namespace Core.DAO
 {
     public class AutorDAO
     {
-        private readonly Storage<Autor> storage;
-        private List<Autor> autori;
+        private readonly Storage<Autor> _storage;
+        private readonly List<Autor> _autori;
 
         public AutorDAO()
         {
-            storage = new Storage<Autor>("autori.csv");
-            autori = storage.Load();
+            _storage = new Storage<Autor>("autori.csv");
+            _autori = _storage.Load();
         }
-        public List<Autor> GetSviAutori()
+        public List<Autor> GetAll()
         {
-            return autori;
+            return _autori.ToList();
         }
-        public Autor NadjiPoId(int id)
+        public Autor FindById(int id)
         {
-            return autori.FirstOrDefault(a => a.Id == id);
+            return _autori.FirstOrDefault(a => a.Id == id);
         }
 
-        public bool DodajAutora(Autor noviAutor)
+        public bool Add(Autor noviAutor)
         {
             // Proveravamo da li već postoji autor sa istim brojem lične karte
-            bool postoji = autori.Any(a => a.BrojLK == noviAutor.BrojLK);
+            bool postoji = _autori.Any(a => a.BrojLK == noviAutor.BrojLK);
 
             if (postoji)
             {
@@ -39,16 +39,17 @@ namespace Core.DAO
             }
 
             // Ako ne postoji, dodeljujemo ID i čuvamo
-            noviAutor.Id = GenerisiId();
-            autori.Add(noviAutor);
-            storage.Save(autori);
+            noviAutor.Id = GenerateId();
+            _autori.Add(noviAutor);
+            _storage.Save(_autori);
             return true;
         }
 
-        public void IzmeniAutora(Autor izmenjeniAutor)
+        public Autor? Update(Autor izmenjeniAutor)
         {
-            var postojeci = NadjiPoId(izmenjeniAutor.Id);
-            if(postojeci != null)
+            var postojeci = FindById(izmenjeniAutor.Id);
+
+            if (postojeci != null)
             {
                 postojeci.Id = izmenjeniAutor.Id;
                 postojeci.Ime = izmenjeniAutor.Ime;
@@ -59,23 +60,25 @@ namespace Core.DAO
                 postojeci.Email = izmenjeniAutor.Email;
                 postojeci.BrojLK = izmenjeniAutor.BrojLK;
                 postojeci.GodineIskustva = izmenjeniAutor.GodineIskustva;
-                storage.Save(autori);
+                _storage.Save(_autori);
             }
+            return postojeci;
+            
         }
-        public void ObrisiAutora(int id)
+        public void Remove(int id)
         {
-            var aut = NadjiPoId(id);
+            var aut = FindById(id);
             if(aut!= null)
             {
-                autori.Remove(aut);
-                storage.Save(autori);
+                _autori.Remove(aut);
+                _storage.Save(_autori);
             }
         }
 
 
-        public int GenerisiId()
+        private int GenerateId()
         {
-            return autori.Any() ? autori.Max(a => a.Id) + 1 : 1;
+            return _autori.Any() ? _autori.Max(a => a.Id) + 1 : 1;
         }
     }
 }
