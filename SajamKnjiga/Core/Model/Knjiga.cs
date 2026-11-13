@@ -13,10 +13,14 @@ namespace Core.Model
         public int GodinaIzdanja { get; set; }
         public double Cena { get; set; }
         public int BrojStrana { get; set; }
-        public int IzdavacId { get; set; } // Strani ključ ka izdavaču (One-to-Many)
 
-        // Memorijska lista autora (Many-to-Many veza preko spojne klase)
+        public int IzdavacId { get; set; } // Strani ključ ka izdavaču (One-to-Many)
+        public Izdavac Izdavac { get; set; } // Memorijska referenca na izdavača
+
+        // Memorijske liste u skladu sa zvaničnom specifikacijom:
         public List<Autor> Autori { get; set; } = new List<Autor>();
+        public List<Posetilac> PosetiociKupci { get; set; } = new List<Posetilac>(); // Lista posetilaca koji su je kupili
+        public List<Posetilac> ListaZelja { get; set; } = new List<Posetilac>(); // Lista posetilaca koji je imaju na listi želja
 
         public Knjiga() { }
 
@@ -31,11 +35,13 @@ namespace Core.Model
             BrojStrana = brojStrana;
             IzdavacId = izdavacId;
             Autori = new List<Autor>();
+            PosetiociKupci = new List<Posetilac>();
+            ListaZelja = new List<Posetilac>();
         }
 
         public string ToCSV()
         {
-            // Autori se ne upisuju ovde, već se čuvaju u spojnoj datoteci (autor_knjiga.csv)
+            // U CSV fajl idu samo osnovni atributi i strani ključ izdavača
             return $"{Id};{Sifra};{Naziv};{Zanr};{GodinaIzdanja};{Cena};{BrojStrana};{IzdavacId}";
         }
 
@@ -51,13 +57,13 @@ namespace Core.Model
                 Cena = double.Parse(csvValues[5]);
                 BrojStrana = int.Parse(csvValues[6]);
                 IzdavacId = int.Parse(csvValues[7]);
-                // Lista autora se popunjava naknadno u memoriji preko DAO sloja i spojne datoteke
+                // Reference i liste se popunjavaju naknadno u memoriji preko DAO sloja i spojnih datoteka
             }
         }
 
         public override string ToString()
         {
-            return $"[ID: {Id}] [{Sifra}] {Naziv} ({Zanr}) - Godina: {GodinaIzdanja}, Cena: {Cena} RSD | Broj autora: {Autori.Count}";
+            return $"[ID: {Id}] [{Sifra}] {Naziv} ({Zanr}) - {Cena} RSD | Autora: {Autori.Count} | Kupljena: {PosetiociKupci.Count} | Na želji: {ListaZelja.Count}";
         }
     }
 }
