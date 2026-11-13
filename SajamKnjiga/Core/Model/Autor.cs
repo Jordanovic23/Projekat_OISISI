@@ -1,5 +1,6 @@
 ﻿using System;
 using Core.Storage.Serialization;
+using System.Collections.Generic;
 
 namespace Core.Model
 {
@@ -15,7 +16,11 @@ namespace Core.Model
         public string BrojLK { get; set; }
         public int GodineIskustva { get; set; }
 
-        public Autor() { }
+        public List<Knjiga> ListaKnjiga { get; set; } = new List<Knjiga>();
+
+        public Autor() {
+
+        }
 
         public Autor(int id, string ime, string prezime, DateOnly datumRodjenja, int adresaId, string telefon, string email, string brojLK, int godineIskustva)
         {

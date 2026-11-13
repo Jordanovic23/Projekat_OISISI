@@ -1,4 +1,6 @@
-﻿using Core.Storage.Serialization;
+﻿using System;
+using System.Collections.Generic;
+using Core.Storage.Serialization;
 
 namespace Core.Model
 {
@@ -11,7 +13,10 @@ namespace Core.Model
         public int GodinaIzdanja { get; set; }
         public double Cena { get; set; }
         public int BrojStrana { get; set; }
-        public int IzdavacId { get; set; } // Veza sa izdavačem (One-to-Many)
+        public int IzdavacId { get; set; } // Strani ključ ka izdavaču (One-to-Many)
+
+        // Memorijska lista autora (Many-to-Many veza preko spojne klase)
+        public List<Autor> Autori { get; set; } = new List<Autor>();
 
         public Knjiga() { }
 
@@ -25,10 +30,12 @@ namespace Core.Model
             Cena = cena;
             BrojStrana = brojStrana;
             IzdavacId = izdavacId;
+            Autori = new List<Autor>();
         }
 
         public string ToCSV()
         {
+            // Autori se ne upisuju ovde, već se čuvaju u spojnoj datoteci (autor_knjiga.csv)
             return $"{Id};{Sifra};{Naziv};{Zanr};{GodinaIzdanja};{Cena};{BrojStrana};{IzdavacId}";
         }
 
@@ -44,12 +51,13 @@ namespace Core.Model
                 Cena = double.Parse(csvValues[5]);
                 BrojStrana = int.Parse(csvValues[6]);
                 IzdavacId = int.Parse(csvValues[7]);
+                // Lista autora se popunjava naknadno u memoriji preko DAO sloja i spojne datoteke
             }
         }
 
         public override string ToString()
         {
-            return $"[ID: {Id}] [{Sifra}] {Naziv} ({Zanr}) - Cena: {Cena} RSD";
+            return $"[ID: {Id}] [{Sifra}] {Naziv} ({Zanr}) - Godina: {GodinaIzdanja}, Cena: {Cena} RSD | Broj autora: {Autori.Count}";
         }
     }
 }
