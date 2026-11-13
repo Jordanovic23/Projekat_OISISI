@@ -34,5 +34,10 @@ namespace Core.Model
                 Drzava = csvValues[3];
             }
         }
+
+        public override string ToString()
+        {
+            return $"{Ulica} {Broj}, {Grad}, {Drzava}";
+        }
     }
 }
