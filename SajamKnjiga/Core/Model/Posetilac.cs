@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Linq;
 
 namespace Core.Model
 {
@@ -20,11 +21,11 @@ namespace Core.Model
         public string BrojClanskeKarte { get; set; } = "";
         public int TrenutnaGodinaClanstva { get; set; }
         public StatusPosetioca Status { get; set; }
-        public List<int> ListaZelja { get; set; } = new List<int>(); // Lista ID-ova knjiga
+        
 
         public Posetilac() { }
 
-        public Posetilac(int id, string ime, string prezime, DateOnly datumRodjenja, int adresaId, string kontaktTelefon, string email, string brojClanskeKarte, int trenutnaGodinaClanstva, StatusPosetioca status, List<int> listaZelja)
+        public Posetilac(int id, string ime, string prezime, DateOnly datumRodjenja, int adresaId, string kontaktTelefon, string email, string brojClanskeKarte, int trenutnaGodinaClanstva, StatusPosetioca status)
         {
             Id = id;
             Ime = ime;
@@ -36,13 +37,10 @@ namespace Core.Model
             BrojClanskeKarte = brojClanskeKarte;
             TrenutnaGodinaClanstva = trenutnaGodinaClanstva;
             Status = status;
-            ListaZelja = listaZelja ?? new List<int>();
         }
         public string ToCSV()
         {
-            // Lista želja koristi "," jer je ";" separator između polja
-            string listaZeljaStr = string.Join(",", ListaZelja);
-            return $"{Id};{Ime};{Prezime};{DatumRodjenja.ToString("yyyy-MM-dd")};{AdresaId};{KontaktTelefon};{Email};{BrojClanskeKarte};{TrenutnaGodinaClanstva};{Status};{listaZeljaStr}";
+            return $"{Id};{Ime};{Prezime};{DatumRodjenja.ToString("yyyy-MM-dd")};{AdresaId};{KontaktTelefon};{Email};{BrojClanskeKarte};{TrenutnaGodinaClanstva};{Status}";
         }
 
         public void FromCSV(string[] csvValues)
@@ -60,24 +58,12 @@ namespace Core.Model
                 TrenutnaGodinaClanstva = int.Parse(csvValues[8]);
                 Status = Enum.Parse<StatusPosetioca>(csvValues[9]);
 
-                ListaZelja = new List<int>();
-                if (csvValues.Length > 10 && !string.IsNullOrWhiteSpace(csvValues[10]))
-                {
-                    foreach (string idStr in csvValues[10].Split(','))
-                    {
-                        if (int.TryParse(idStr, out int knjigaId))
-                        {
-                            ListaZelja.Add(knjigaId);
-                        }
-                    }
-                }
             }
         }
         public override string ToString()
         {
             return $"[ID: {Id}] {Ime} {Prezime} ({Status}), karta: {BrojClanskeKarte}, " +
-                   $"rođen: {DatumRodjenja:dd.MM.yyyy}, tel: {KontaktTelefon}, email: {Email}, " +
-                   $"lista želja: {ListaZelja.Count} knjiga";
+                   $"rođen: {DatumRodjenja:dd.MM.yyyy}, tel: {KontaktTelefon}, email: {Email}";
         }
     }
 }
