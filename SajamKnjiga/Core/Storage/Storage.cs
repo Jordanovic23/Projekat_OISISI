@@ -1,43 +1,54 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Core.Storage.Serialization;
 
 namespace Core.Storage
 {
     public class Storage<T> where T : ISerializable, new()
     {
-        private readonly string filePath;
-        private readonly Serializer<T> serializer;
+        private readonly string _filePath;
+        private readonly Serializer<T> _serializer;
 
         public Storage(string fileName)
         {
-            // Putanja do fajla unutar "Data" foldera 
-            // (u skladu sa nefunkcionalnim zahtevima koristimo Path.Combine)
-            filePath = Path.Combine("Data", fileName);
-            serializer = new Serializer<T>();
-
-            // Ako folder "Data" ne postoji, automatski ga kreiraj da aplikacija ne pukne
-            Directory.CreateDirectory("Data");
+            string dataFolder = NadjiDataFolder();
+            Directory.CreateDirectory(dataFolder);
+            _filePath = Path.Combine(dataFolder, fileName);
+            _serializer = new Serializer<T>();
         }
 
-        // Učitavanje podataka iz fajla (deserijalizacija)
+        // Ide navise od bin/Debug/netX dok ne nadje folder sa .sln (ili .slnx) fajlom,
+        // tako da GUI i konzola dele isti Data folder u korenu solution-a.
+        private static string NadjiDataFolder()
+        {
+            DirectoryInfo? dir = new DirectoryInfo(AppContext.BaseDirectory);
+            while (dir != null && !dir.EnumerateFiles("*.sln*").Any())
+            {
+                dir = dir.Parent;
+            }
+
+            // Ako solution nije pronadjen (aplikacija pokrenuta van njega), koristi folder pored .exe
+            string koren = dir?.FullName ?? AppContext.BaseDirectory;
+            return Path.Combine(koren, "Data");
+        }
+
         public List<T> Load()
         {
-            if (!File.Exists(filePath))
+            if (!File.Exists(_filePath))
             {
-                // Ako fajl još uvek ne postoji, vrati praznu listu
                 return new List<T>();
             }
 
-            string[] lines = File.ReadAllLines(filePath);
-            return serializer.FromCSV(new List<string>(lines));
+            string[] lines = File.ReadAllLines(_filePath);
+            return _serializer.FromCSV(new List<string>(lines));
         }
 
-        // Čuvanje podataka u fajl (serijalizacija)
         public void Save(List<T> objects)
         {
-            List<string> lines = serializer.ToCSV(objects);
-            File.WriteAllLines(filePath, lines);
+            List<string> lines = _serializer.ToCSV(objects);
+            File.WriteAllLines(_filePath, lines);
         }
     }
 }
