@@ -46,5 +46,28 @@ namespace Core.DAO
             return lista_zelja;
         } 
 
+        public ListaZelja? Add(ListaZelja novaListaZelja)
+        {
+            bool postoji = _listaZelja.Any(l => l.PosetilacId == novaListaZelja.PosetilacId && l.KnjigaId == novaListaZelja.KnjigaId);
+            if (postoji)
+            {
+                return null;
+            }
+            novaListaZelja.Id = GenerateId();
+            _listaZelja.Add(novaListaZelja);
+            _storage.Save(_listaZelja);
+            return novaListaZelja;
+        }
+
+        private int GenerateId()
+        {
+            if (_listaZelja.Count == 0)
+                return 1;
+            else
+                return _listaZelja.Max(l => l.Id) + 1;
+        }
+
+
+
     }
 }
