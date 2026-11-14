@@ -17,25 +17,34 @@ class Program
         var autorDao = new AutorDAO();
         var knjigaDao = new KnjigaDAO();
         var izdavacDao = new IzdavacDAO();
+        var posetilacDao = new PosetilacDAO();
         var autorKnjigaDao = new AutorKnjigaDAO();
         var kupovinaDao = new KupovinaDAO();
         var listaZeljaDao = new ListaZeljaDAO();
 
         var autorService = new AutorService(autorDao, adresaDao, autorKnjigaDao, izdavacDao);
         var knjigaService = new KnjigaService(knjigaDao, autorDao, izdavacDao, autorKnjigaDao, kupovinaDao, listaZeljaDao);
+        var izdavacService = new IzdavacService(izdavacDao, knjigaDao);
+        var posetilacService = new PosetilacService(posetilacDao, adresaDao, kupovinaDao, listaZeljaDao);
 
         var autori = new AutorKontroler(autorService);
         var knjige = new KnjigaKontroler(knjigaService);
+        var izdavaci = new IzdavacKontroler(izdavacService);
+        var posetioci = new PosetilacKontroler(posetilacService);
 
         try
         {
             KonzolaUtils.Meni("SAJAM KNJIGA",
                 ("Autori", autori.Meni),
                 ("Knjige", knjige.Meni),
+                ("Izdavači", izdavaci.Meni),
+                ("Posetioci", posetioci.Meni),
                 ("Prikaži sve", () =>
                 {
                     autori.PrikaziSve();
                     knjige.PrikaziSve();
+                    izdavaci.PrikaziSve();
+                    posetioci.PrikaziSve();
                 }
             ));
         }
