@@ -23,16 +23,16 @@ namespace Core.DAO
         {
             return _knjige.FirstOrDefault(k => k.Id == id);
         }
-        public bool Remove(int id)
+        public Knjiga Remove(int id)
         {
             var knjiga = GetById(id);
             if (knjiga == null)
             {
-                return false;
+                return null;
             }
             _knjige.Remove(knjiga);
             _storage.Save(_knjige);
-            return true;
+            return knjiga;
         }
 
         public Knjiga? Add(Knjiga novaKnjiga)
