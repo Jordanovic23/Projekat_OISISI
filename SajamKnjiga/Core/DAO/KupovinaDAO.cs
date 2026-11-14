@@ -20,5 +20,26 @@ namespace Core.DAO
         {
             return new List<Kupovina>(_kupovine);
         }
+
+        public List<Kupovina> GetByPosetilacId(int posetilacId)
+        {
+            return _kupovine
+                .Where(k => k.PosetilacId == posetilacId)
+                .ToList();
+        }
+
+        public Kupovina Add(Kupovina novaKupovina)
+        {
+            novaKupovina.Id = GenerateId();
+            _kupovine.Add(novaKupovina);
+            _storage.Save(_kupovine);
+            return novaKupovina;
+        }
+
+
+        private int GenerateId()
+        {
+            return _kupovine.Any() ? _kupovine.Max(k => k.Id) + 1 : 1;
+        }
     }
 }
