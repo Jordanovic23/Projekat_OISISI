@@ -48,7 +48,7 @@ namespace Core.DAO
             return kupovina;
         }
 
-        public int RemoveByPosetilac(int posetilacId) 
+        public int RemoveByPosetilacId(int posetilacId) 
         {
             int obrisano = _kupovine.RemoveAll(k => k.PosetilacId == posetilacId);
             if(obrisano > 0)
@@ -58,7 +58,7 @@ namespace Core.DAO
             return obrisano;
         }
 
-        public int RemoveByKnjiga(int knjigaId)
+        public int RemoveByKnjigaId(int knjigaId)
         {
             int obrisano = _kupovine.RemoveAll(k => k.KnjigaId == knjigaId);
             if (obrisano > 0)

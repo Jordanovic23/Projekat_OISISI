@@ -61,7 +61,7 @@ namespace Core.Services
                 ?? throw new InvalidOperationException("Knjiga nije pronađena.");
 
             _autorKnjigaDao.RemoveByKnjigaId(id);
-            _kupovinaDao.RemoveByKnjiga(id);
+            _kupovinaDao.RemoveByKnjigaId(id);
             _listaZeljaDao.RemoveByKnjigaId(id);
             _knjigaDao.Remove(id);
             return knjiga;

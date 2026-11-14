@@ -22,7 +22,7 @@ namespace Core.DAO
             return new List<ListaZelja>(_listaZelja);
         }
 
-        public ListaZelja GetById(int id)
+        public ListaZelja? GetById(int id)
         {
             return _listaZelja.FirstOrDefault(l => l.Id == id);
         }
