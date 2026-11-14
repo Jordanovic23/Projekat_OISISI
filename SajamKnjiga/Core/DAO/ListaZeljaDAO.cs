@@ -34,6 +34,13 @@ namespace Core.DAO
                 .ToList();
         }
 
+        public List<ListaZelja> GetByKnjigaId(int knjigaId)
+        {
+            return _listaZelja
+                .Where(l => l.KnjigaId == knjigaId)
+                .ToList();
+        }
+
         public ListaZelja? Remove(int id)
         {
             ListaZelja? lista_zelja = GetById(id);
@@ -57,6 +64,18 @@ namespace Core.DAO
             _listaZelja.Add(novaListaZelja);
             _storage.Save(_listaZelja);
             return novaListaZelja;
+        }
+
+        public ListaZelja? Remove(int posetilacId, int knjigaId) 
+        {
+            var listaZelja = _listaZelja.FirstOrDefault(l => l.PosetilacId == posetilacId && l.KnjigaId == knjigaId);
+            if (listaZelja == null)
+            {
+                return null;
+            }
+            _listaZelja.Remove(listaZelja);
+            _storage.Save(_listaZelja);
+            return listaZelja;
         }
 
         public int RemoveByPosetilacId(int posetilacId)

@@ -41,7 +41,7 @@ namespace Core.Model
                
                 int ocenaInt = int.Parse(csvValues[4]);
                 if (!Enum.IsDefined(typeof(Ocena), ocenaInt))
-                    throw new FormatException("Nedozvoljena vrednost za ocenu: {ocenaInt} (dozvoljene vrednosti su 1-5)");
+                    throw new FormatException($"Nedozvoljena vrednost za ocenu: {ocenaInt} (dozvoljene vrednosti su 1-5)");
                 Ocena = (Ocena)ocenaInt;
                 // Uzimamo sve delove od 5. indeksa nadalje i spajamo ih u jedan string
                 Komentar = string.Join(";", csvValues, 5, csvValues.Length - 5);
