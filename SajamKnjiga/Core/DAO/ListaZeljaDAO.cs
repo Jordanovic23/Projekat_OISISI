@@ -69,6 +69,16 @@ namespace Core.DAO
             return obrisano;
         }
 
+        public int RemoveByKnjigaId(int knjigaId)
+        {
+            int obrisano = _listaZelja.RemoveAll(l => l.KnjigaId == knjigaId);
+            if (obrisano > 0)
+            {
+                _storage.Save(_listaZelja);
+            }
+            return obrisano;
+        }
+
         private int GenerateId()
         {
             if (_listaZelja.Count == 0)
