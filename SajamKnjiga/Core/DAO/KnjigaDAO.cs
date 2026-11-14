@@ -69,6 +69,44 @@ namespace Core.DAO
             return postojeca;
         }
 
+
+        // Na isti nacin kao i kod autora sortirano po ugledu na vezbe
+
+        public List<Knjiga> GetSorted(int page, int pageSize, string sortCriteria, SortDirection sortDirection)
+        {
+            IEnumerable<Knjiga> knjige = _knjige;
+
+            // Sortiranje prema prosleđenom kriterijumu
+            switch (sortCriteria)
+            {
+                case "Id":
+                    knjige = _knjige.OrderBy(k => k.Id);
+                    break;
+                case "Naziv":
+                    knjige = _knjige.OrderBy(k => k.Naziv);
+                    break;
+                case "Zanr":
+                    knjige = _knjige.OrderBy(k => k.Zanr);
+                    break;
+                default:
+                    knjige = _knjige.OrderBy(k => k.Id);
+                    break;
+            }
+
+            // Promena smera ukoliko je opadajući
+            if (sortDirection == SortDirection.Descending)
+            {
+                knjige = knjige.Reverse();
+            }
+
+            // Paginacija
+            knjige = knjige.Skip((page - 1) * pageSize).Take(pageSize);
+
+            return knjige.ToList();
+        }
+
+
+
         private int GenerateId()
         {
             return _knjige.Any() ? _knjige.Max(k => k.Id) + 1 : 1;
