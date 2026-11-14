@@ -23,7 +23,7 @@ namespace Core.DAO
         {
             return _knjige.FirstOrDefault(k => k.Id == id);
         }
-        public bool Delete(int id)
+        public bool Remove(int id)
         {
             var knjiga = GetById(id);
             if (knjiga == null)
@@ -53,11 +53,20 @@ namespace Core.DAO
 
         public Knjiga? Update(Knjiga izmenjenaKnjiga)
         {
+            bool postoji = _knjige.Any(k => k.Sifra == izmenjenaKnjiga.Sifra && k.Id != izmenjenaKnjiga.Id);
+            if (postoji)
+            {
+                return null;
+            }
+
+
             var postojeca = GetById(izmenjenaKnjiga.Id);
             if (postojeca == null)
             {
                 return null;
             }
+
+
             postojeca.Sifra = izmenjenaKnjiga.Sifra;
             postojeca.Naziv = izmenjenaKnjiga.Naziv;
             postojeca.GodinaIzdanja = izmenjenaKnjiga.GodinaIzdanja;
@@ -87,6 +96,15 @@ namespace Core.DAO
                     break;
                 case "Zanr":
                     knjige = _knjige.OrderBy(k => k.Zanr);
+                    break;
+                case "ISBN":
+                    knjige = _knjige.OrderBy(k => k.Sifra);
+                    break;
+                case "Cena":
+                    knjige = _knjige.OrderBy(k => k.Cena);
+                    break;
+                case "Godina izdanja":
+                    knjige = _knjige.OrderBy(k => k.GodinaIzdanja);
                     break;
                 default:
                     knjige = _knjige.OrderBy(k => k.Id);

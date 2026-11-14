@@ -22,7 +22,7 @@ namespace Core.DAO
         {
             return _autori.ToList();
         }
-        public Autor FindById(int id)
+        public Autor? GetById(int id)
         {
             return _autori.FirstOrDefault(a => a.Id == id);
         }
@@ -47,7 +47,13 @@ namespace Core.DAO
 
         public Autor? Update(Autor izmenjeniAutor)
         {
-            var postojeci = FindById(izmenjeniAutor.Id);
+            bool postoji = _autori.Any(a => a.BrojLK == izmenjeniAutor.BrojLK && a.Id != izmenjeniAutor.Id);
+            if (postoji)
+            {
+                return null;
+            }
+
+            var postojeci = GetById(izmenjeniAutor.Id);
 
             if (postojeci != null)
             {
@@ -65,14 +71,16 @@ namespace Core.DAO
             return postojeci;
             
         }
-        public void Remove(int id)
+        public Autor? Remove(int id)
         {
-            var aut = FindById(id);
+            var aut = GetById(id);
             if(aut!= null)
             {
                 _autori.Remove(aut);
                 _storage.Save(_autori);
+                return aut;
             }
+            return null;
         }
 
 
@@ -94,6 +102,9 @@ namespace Core.DAO
                     break;
                 case "Prezime":
                     autori = _autori.OrderBy(a => a.Prezime);
+                    break;
+                case "Email":
+                    autori = _autori.OrderBy(a => a.Email);
                     break;
                 default:
                     autori = _autori.OrderBy(a => a.Id);
