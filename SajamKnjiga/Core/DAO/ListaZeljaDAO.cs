@@ -59,6 +59,16 @@ namespace Core.DAO
             return novaListaZelja;
         }
 
+        public int RemoveByPosetilacId(int posetilacId)
+        {
+            int obrisano = _listaZelja.RemoveAll(l => l.PosetilacId == posetilacId);
+            if (obrisano > 0)
+            {
+                _storage.Save(_listaZelja);
+            }
+            return obrisano;
+        }
+
         private int GenerateId()
         {
             if (_listaZelja.Count == 0)

@@ -43,6 +43,10 @@ namespace Core.DAO
 
         public Posetilac? Update(Posetilac posetilac) 
         {
+            bool zauzeta = _posetioci.Any(p => p.BrojClanskeKarte == posetilac.BrojClanskeKarte && p.Id != posetilac.Id);
+            if (zauzeta)
+                return null;
+
             Posetilac? stari = GetById(posetilac.Id);
             if(stari == null)
                 return null;
