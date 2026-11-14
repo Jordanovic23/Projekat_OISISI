@@ -1,46 +1,36 @@
-﻿using Core.DAO;
-using Core.Model;
+﻿using System.Text;
+using ConsoleClient.Controllers;
+using ConsoleClient.Utils;
+using Core.DAO;
+using Core.Services;
 
 class Program
 {
     static void Main(string[] args)
     {
-        var listaZeljaDao = new ListaZeljaDAO();
-        var kupovinaDao = new KupovinaDAO();
+        // Da se č, ć, š, đ, ž ispravno prikazuju i unose
+        Console.OutputEncoding = Encoding.UTF8;
+        Console.InputEncoding = Encoding.UTF8;
 
-        Console.WriteLine("=== SAJAM KNJIGA - PRIKAZ ===");
+        // Svaki DAO se pravi SAMO JEDNOM i deli izmedju servisa
+        var adresaDao = new AdresaDAO();
+        var autorDao = new AutorDAO();
+        var izdavacDao = new IzdavacDAO();
+        var autorKnjigaDao = new AutorKnjigaDAO();
 
-        // 1. Prikaz svih stavki sa liste želja za posetioca sa ID-jem 1
-        int posetilacId = 1;
-        var zeljePosetioca = listaZeljaDao.GetByPosetilacId(posetilacId);
+        var autorService = new AutorService(autorDao, adresaDao, autorKnjigaDao, izdavacDao);
+        var autori = new AutorController(autorService);
 
-        Console.WriteLine($"\nLista želja za posetioca ID: {posetilacId}:");
-        if (zeljePosetioca.Count == 0)
+        try
         {
-            Console.WriteLine("  (Prazna lista želja)");
+            KonzolaUtils.Meni("SAJAM KNJIGA",
+                ("Autori", autori.Meni));
         }
-        else
+        catch (EndOfStreamException)
         {
-            foreach (var zelja in zeljePosetioca)
-            {   
-                Console.WriteLine($" - Knjiga ID: {zelja.KnjigaId}");
-            }
+            // ulaz je zatvoren, izlazimo
         }
 
-        // 2. Prikaz kupovina za istog posetioca
-        var kupovinePosetioca = kupovinaDao.GetByPosetilacId(posetilacId);
-
-        Console.WriteLine($"\nIstorija kupovina za posetioca ID: {posetilacId}:");
-        if (kupovinePosetioca.Count == 0)
-        {
-            Console.WriteLine("  (Nema evidentiranih kupovina)");
-        }
-        else
-        {
-            foreach (var k in kupovinePosetioca)
-            {
-                Console.WriteLine($" - Knjiga ID: {k.KnjigaId} | Datum: {k.DatumKupovine} | Ocena: {k.Ocena}");
-            }
-        }
+        Console.WriteLine("Doviđenja!");
     }
 }
