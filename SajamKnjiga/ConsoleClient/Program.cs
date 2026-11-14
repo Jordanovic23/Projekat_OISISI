@@ -26,11 +26,13 @@ class Program
         var knjigaService = new KnjigaService(knjigaDao, autorDao, izdavacDao, autorKnjigaDao, kupovinaDao, listaZeljaDao);
         var izdavacService = new IzdavacService(izdavacDao, knjigaDao);
         var posetilacService = new PosetilacService(posetilacDao, adresaDao, kupovinaDao, listaZeljaDao);
+        var kupovinaService = new KupovinaService(kupovinaDao, posetilacDao, knjigaDao);
 
         var autori = new AutorKontroler(autorService);
         var knjige = new KnjigaKontroler(knjigaService);
         var izdavaci = new IzdavacKontroler(izdavacService);
         var posetioci = new PosetilacKontroler(posetilacService);
+        var kupovine = new KupovinaKontroler(kupovinaService);
 
         try
         {
@@ -39,12 +41,14 @@ class Program
                 ("Knjige", knjige.Meni),
                 ("Izdavači", izdavaci.Meni),
                 ("Posetioci", posetioci.Meni),
+                ("Kupovine", kupovine.Meni),
                 ("Prikaži sve", () =>
                 {
                     autori.PrikaziSve();
                     knjige.PrikaziSve();
                     izdavaci.PrikaziSve();
                     posetioci.PrikaziSve();
+                    kupovine.PrikaziSve();
                 }
             ));
         }
