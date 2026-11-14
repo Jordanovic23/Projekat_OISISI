@@ -76,6 +76,45 @@ namespace Core.DAO
         }
 
 
+        // Koriscen materijal sa vezbi CRUDExample 
+        // Sortiranje po kriterijumu i direkciji koja moze
+        // biti rastuca ili opadajuca
+        public List<Autor> GetSorted(int page, int pageSize, string sortCriteria, SortDirection sortDirection)
+        {
+            IEnumerable<Autor> autori = _autori;
+
+            // Sortiranje prema prosleđenom kriterijumu
+            switch (sortCriteria)
+            {
+                case "Id":
+                    autori = _autori.OrderBy(a => a.Id);
+                    break;
+                case "Ime":
+                    autori = _autori.OrderBy(a => a.Ime);
+                    break;
+                case "Prezime":
+                    autori = _autori.OrderBy(a => a.Prezime);
+                    break;
+                default:
+                    autori = _autori.OrderBy(a => a.Id);
+                    break;
+            }
+
+            // Promena smera ukoliko je opadajući
+            if (sortDirection == SortDirection.Descending)
+            {
+                autori = autori.Reverse();
+            }
+
+            // Paginacija
+            autori = autori.Skip((page - 1) * pageSize).Take(pageSize);
+
+            return autori.ToList();
+        }
+
+
+
+
         private int GenerateId()
         {
             return _autori.Any() ? _autori.Max(a => a.Id) + 1 : 1;
