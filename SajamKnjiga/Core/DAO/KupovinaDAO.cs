@@ -36,10 +36,67 @@ namespace Core.DAO
             return novaKupovina;
         }
 
+        public Kupovina? Remove(int kupovinaId) 
+        {
+            Kupovina? kupovina = GetById(kupovinaId);
+            if (kupovina == null) 
+            {
+                return null;
+            }
+            _kupovine.Remove(kupovina);
+            _storage.Save(_kupovine);
+            return kupovina;
+        }
+
+        public int RemoveByPosetilac(int posetilacId) 
+        {
+            int obrisano = _kupovine.RemoveAll(k => k.PosetilacId == posetilacId);
+            if(obrisano > 0)
+            {
+                _storage.Save(_kupovine);
+            }
+            return obrisano;
+        }
+
+        public int RemoveByKnjiga(int knjigaId)
+        {
+            int obrisano = _kupovine.RemoveAll(k => k.KnjigaId == knjigaId);
+            if (obrisano > 0)
+            {
+                _storage.Save(_kupovine);
+            }
+            return obrisano;
+        }
 
         private int GenerateId()
         {
             return _kupovine.Any() ? _kupovine.Max(k => k.Id) + 1 : 1;
         }
+
+        public Kupovina? GetById(int id)
+        {
+            return _kupovine.FirstOrDefault(k => k.Id == id);
+        }
+        public Kupovina? Update(Kupovina izmenjenaKupovina)
+        {
+            Kupovina? postojeca = GetById(izmenjenaKupovina.Id);
+            if (postojeca == null)
+            {
+                return null;
+            }
+            postojeca.DatumKupovine = izmenjenaKupovina.DatumKupovine;
+            postojeca.Ocena = izmenjenaKupovina.Ocena;
+            postojeca.Komentar = izmenjenaKupovina.Komentar;
+            _storage.Save(_kupovine);
+            return postojeca;
+        }
+
+        public List<Kupovina> GetByKnjigaId(int knjigaId)
+        {
+            return _kupovine
+                .Where(k => k.KnjigaId == knjigaId)
+                .ToList();
+        }
+
     }
 }
