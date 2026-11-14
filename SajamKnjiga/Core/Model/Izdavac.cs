@@ -14,8 +14,6 @@ namespace Core.Model
         public string Sifra { get; set; } = "";
         public string Naziv { get; set; } = "";
 
-        // Serijalizuje se. BEZ_SEFA (-1) znaci da izdavac jos nema sefa,
-        // jer je 0 validan Id koji GenerateId() dodeljuje prvom entitetu.
         public int IdSefa { get; set; } = BEZ_SEFA;
         public Autor? Sef { get; set; }
 
