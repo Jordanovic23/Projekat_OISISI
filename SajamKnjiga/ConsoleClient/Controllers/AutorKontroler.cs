@@ -4,11 +4,11 @@ using Core.Services;
 
 namespace ConsoleClient.Controllers
 {
-    public class AutorController
+    public class AutorKontroler
     {
         private readonly AutorService _servis;
 
-        public AutorController(AutorService servis)
+        public AutorKontroler(AutorService servis)
         {
             _servis = servis;
         }

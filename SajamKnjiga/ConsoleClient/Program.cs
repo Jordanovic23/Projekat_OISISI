@@ -15,16 +15,29 @@ class Program
         // Svaki DAO se pravi SAMO JEDNOM i deli izmedju servisa
         var adresaDao = new AdresaDAO();
         var autorDao = new AutorDAO();
+        var knjigaDao = new KnjigaDAO();
         var izdavacDao = new IzdavacDAO();
         var autorKnjigaDao = new AutorKnjigaDAO();
+        var kupovinaDao = new KupovinaDAO();
+        var listaZeljaDao = new ListaZeljaDAO();
 
         var autorService = new AutorService(autorDao, adresaDao, autorKnjigaDao, izdavacDao);
-        var autori = new AutorController(autorService);
+        var knjigaService = new KnjigaService(knjigaDao, autorDao, izdavacDao, autorKnjigaDao, kupovinaDao, listaZeljaDao);
+
+        var autori = new AutorKontroler(autorService);
+        var knjige = new KnjigaKontroler(knjigaService);
 
         try
         {
             KonzolaUtils.Meni("SAJAM KNJIGA",
-                ("Autori", autori.Meni));
+                ("Autori", autori.Meni),
+                ("Knjige", knjige.Meni),
+                ("Prikaži sve", () =>
+                {
+                    autori.PrikaziSve();
+                    knjige.PrikaziSve();
+                }
+            ));
         }
         catch (EndOfStreamException)
         {
