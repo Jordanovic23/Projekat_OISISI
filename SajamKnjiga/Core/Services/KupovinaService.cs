@@ -9,11 +9,14 @@ namespace Core.Services
         private readonly PosetilacDAO _posetilacDao;
         private readonly KnjigaDAO _knjigaDao;
 
-        public KupovinaService(KupovinaDAO kupovinaDao, PosetilacDAO posetilacDao, KnjigaDAO knjigaDao)
+        private readonly ListaZeljaDAO _listaZelja;
+
+        public KupovinaService(KupovinaDAO kupovinaDao, PosetilacDAO posetilacDao, KnjigaDAO knjigaDao, ListaZeljaDAO listaZelja)
         {
             _kupovinaDao = kupovinaDao;
             _posetilacDao = posetilacDao;
             _knjigaDao = knjigaDao;
+            _listaZelja = listaZelja;
         }
 
         public List<Kupovina> GetAll() => _kupovinaDao.GetAll();
@@ -35,6 +38,10 @@ namespace Core.Services
                 throw new InvalidOperationException("Posetilac sa tim ID-jem ne postoji.");
             if (_knjigaDao.GetById(kupovina.KnjigaId) == null)
                 throw new InvalidOperationException("Knjiga sa tim ID-jem ne postoji.");
+            if (_kupovinaDao.GetByPosetilacId(kupovina.PosetilacId).Any(k => k.KnjigaId == kupovina.KnjigaId))
+                throw new InvalidOperationException("Posetilac je već kupio ovu knjigu.");
+
+            _listaZelja.Remove(kupovina.PosetilacId, kupovina.KnjigaId);
             return _kupovinaDao.Add(kupovina);
         }
 
