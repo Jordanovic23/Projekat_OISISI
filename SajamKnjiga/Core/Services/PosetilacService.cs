@@ -9,14 +9,16 @@ namespace Core.Services
         private readonly AdresaDAO _adresaDao;
         private readonly KupovinaDAO _kupovinaDao;
         private readonly ListaZeljaDAO _listaZeljaDao;
+        private readonly KnjigaDAO _knjigaDao;
 
         public PosetilacService(PosetilacDAO posetilacDao, AdresaDAO adresaDao,
-                                KupovinaDAO kupovinaDao, ListaZeljaDAO listaZeljaDao)
+                                KupovinaDAO kupovinaDao, ListaZeljaDAO listaZeljaDao,KnjigaDAO knjigaDAO)
         {
             _posetilacDao = posetilacDao;
             _adresaDao = adresaDao;
             _kupovinaDao = kupovinaDao;
             _listaZeljaDao = listaZeljaDao;
+            _knjigaDao = knjigaDAO;
         }
 
         public List<Posetilac> GetAll() => _posetilacDao.GetAll();
@@ -34,6 +36,51 @@ namespace Core.Services
             Adresa sacuvana = _adresaDao.Add(adresa)!;
             posetilac.AdresaId = sacuvana.Id;
             return _posetilacDao.Add(posetilac)!;
+        }
+
+        // Kupovine posetioca
+        public List<Kupovina> GetKupovine(int posetilacId) => _kupovinaDao.GetByPosetilacId(posetilacId);
+
+        // Prosecna ocena svih recenzija posetioca; null ako nema kupovina
+        public double? ProsecnaOcena(int posetilacId)
+        {
+            List<Kupovina> kupovine = GetKupovine(posetilacId);
+            return kupovine.Count == 0 ? null : kupovine.Average(k => (int)k.Ocena);
+        }
+
+        // Knjige sa liste zelja posetioca
+        public List<Knjiga> GetListaZelja(int posetilacId)
+        {
+            return _listaZeljaDao.GetByPosetilacId(posetilacId)
+                .Select(z => _knjigaDao.GetById(z.KnjigaId))
+                .OfType<Knjiga>()
+                .ToList();
+        }
+
+        // Knjige koje posetilac moze da doda na listu zelja (nije ih kupio i nisu vec na listi)
+        public List<Knjiga> GetKnjigeZaListuZelja(int posetilacId)
+        {
+            var kupljene = GetKupovine(posetilacId).Select(k => k.KnjigaId).ToHashSet();
+            var naListi = _listaZeljaDao.GetByPosetilacId(posetilacId).Select(z => z.KnjigaId).ToHashSet();
+            return _knjigaDao.GetAll().Where(k => !kupljene.Contains(k.Id) && !naListi.Contains(k.Id)).ToList();
+        }
+
+        public void DodajNaListuZelja(int posetilacId, int knjigaId)
+        {
+            if (_posetilacDao.GetById(posetilacId) == null)
+                throw new InvalidOperationException("Posetilac nije pronađen.");
+            if (_knjigaDao.GetById(knjigaId) == null)
+                throw new InvalidOperationException("Knjiga nije pronađena.");
+            if (GetKupovine(posetilacId).Any(k => k.KnjigaId == knjigaId))
+                throw new InvalidOperationException("Posetilac je već kupio ovu knjigu.");
+            if (_listaZeljaDao.Add(new ListaZelja { PosetilacId = posetilacId, KnjigaId = knjigaId }) == null)
+                throw new InvalidOperationException("Knjiga je već na listi želja.");
+        }
+
+        public void UkloniSaListeZelja(int posetilacId, int knjigaId)
+        {
+            if (_listaZeljaDao.Remove(posetilacId, knjigaId) == null)
+                throw new InvalidOperationException("Knjiga nije na listi želja ovog posetioca.");
         }
 
         public Posetilac Update(Posetilac izmenjen, Adresa adresa)
