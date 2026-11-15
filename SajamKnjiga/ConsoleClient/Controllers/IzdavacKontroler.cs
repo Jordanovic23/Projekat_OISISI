@@ -17,21 +17,48 @@ namespace ConsoleClient.Controllers
         {
             KonzolaUtils.Meni("IZDAVAČI",
                 ("Prikaži sve izdavače", PrikaziSve),
+                ("Prikaži knjige i autore izdavača", PrikaziDetalje),
                 ("Dodaj izdavača", Dodaj),
                 ("Izmeni izdavača", Izmeni),
-                ("Obriši izdavača", Obrisi));
+                ("Obriši izdavača", Obrisi),
+                ("Postavi šefa izdavača", PostaviSefa));
         }
 
         public void PrikaziSve()
         {
             Console.WriteLine("\n--- Izdavači ---");
             KonzolaUtils.Tabela(
-                new[] { "ID", "Šifra", "Naziv", "ID šefa", "Knjiga" },
-                _servis.GetAll().Select(i => new[]
+                new[] { "ID", "Šifra", "Naziv", "Šef", "Knjiga", "Autora" },
+                _servis.GetAll().Select(i =>
                 {
-                    i.Id.ToString(), i.Sifra, i.Naziv,
-                    i.IdSefa == Izdavac.BEZ_SEFA ? "-" : i.IdSefa.ToString(),
-                    _servis.BrojKnjiga(i.Id).ToString()
+                    Autor? sef = _servis.GetSef(i);
+                    return new[]
+                    {
+                        i.Id.ToString(), i.Sifra, i.Naziv,
+                        sef == null ? "-" : $"{sef.Ime} {sef.Prezime}",
+                        _servis.BrojKnjiga(i.Id).ToString(),
+                        _servis.GetAutori(i.Id).Count.ToString()
+                    };
+                }));
+        }
+
+        private void PrikaziDetalje()
+        {
+            Izdavac i = Izaberi();
+            Console.WriteLine($"\n--- Knjige izdavača {i.Naziv} ---");
+            KonzolaUtils.Tabela(
+                new[] { "ID", "ISBN", "Naziv", "Žanr", "Godina", "Cena" },
+                _servis.GetKnjige(i.Id).Select(k => new[]
+                {
+                    k.Id.ToString(), k.Sifra, k.Naziv, k.Zanr, k.GodinaIzdanja.ToString(), k.Cena.ToString("N2")
+                }));
+
+            Console.WriteLine($"\n--- Autori izdavača {i.Naziv} ---");
+            KonzolaUtils.Tabela(
+                new[] { "ID", "Ime", "Prezime", "God. iskustva" },
+                _servis.GetAutori(i.Id).Select(a => new[]
+                {
+                    a.Id.ToString(), a.Ime, a.Prezime, a.GodineIskustva.ToString()
                 }));
         }
 
@@ -59,6 +86,20 @@ namespace ConsoleClient.Controllers
                 return;
             _servis.Remove(i.Id);
             Console.WriteLine("  Izdavač obrisan.");
+        }
+
+        private void PostaviSefa()
+        {
+            Izdavac i = Izaberi();
+            var kandidati = _servis.GetAutori(i.Id);
+            Console.WriteLine($"Autori koji su izdavali knjige kod izdavača {i.Naziv}:");
+            KonzolaUtils.Tabela(
+                new[] { "ID", "Ime", "Prezime", "God. iskustva" },
+                kandidati.Select(a => new[] { a.Id.ToString(), a.Ime, a.Prezime, a.GodineIskustva.ToString() }));
+            if (kandidati.Count == 0) return;
+
+            _servis.PostaviSefa(i.Id, KonzolaUtils.Broj("ID autora koji postaje šef"));
+            Console.WriteLine("  Šef izdavača postavljen.");
         }
 
         private Izdavac Izaberi()
