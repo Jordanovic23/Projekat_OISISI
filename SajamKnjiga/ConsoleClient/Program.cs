@@ -22,7 +22,7 @@ class Program
         var kupovinaDao = new KupovinaDAO();
         var listaZeljaDao = new ListaZeljaDAO();
 
-        var autorService = new AutorService(autorDao, adresaDao, autorKnjigaDao, izdavacDao);
+        var autorService = new AutorService(autorDao, adresaDao, autorKnjigaDao, izdavacDao,knjigaDao);
         var knjigaService = new KnjigaService(knjigaDao, autorDao, izdavacDao, autorKnjigaDao, kupovinaDao, listaZeljaDao);
         var izdavacService = new IzdavacService(izdavacDao, knjigaDao);
         var posetilacService = new PosetilacService(posetilacDao, adresaDao, kupovinaDao, listaZeljaDao);

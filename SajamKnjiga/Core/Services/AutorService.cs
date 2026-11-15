@@ -10,13 +10,16 @@ namespace Core.Services
         private readonly AutorKnjigaDAO _autorKnjigaDao;
         private readonly IzdavacDAO _izdavacDao;
 
+        private readonly KnjigaDAO _knjigaDao;
+
         public AutorService(AutorDAO autorDao, AdresaDAO adresaDao,
-                            AutorKnjigaDAO autorKnjigaDao, IzdavacDAO izdavacDao)
+                            AutorKnjigaDAO autorKnjigaDao, IzdavacDAO izdavacDao, KnjigaDAO knjigaDao)
         {
             _autorDao = autorDao;
             _adresaDao = adresaDao;
             _autorKnjigaDao = autorKnjigaDao;
             _izdavacDao = izdavacDao;
+            _knjigaDao = knjigaDao;
         }
 
         public List<Autor> GetAll() => _autorDao.GetAll();
@@ -26,6 +29,25 @@ namespace Core.Services
         public Adresa? GetAdresa(Autor autor) => _adresaDao.GetById(autor.AdresaId);
 
         public int BrojKnjiga(int autorId) => _autorKnjigaDao.GetKnjigeIds(autorId).Count;
+
+
+        // Knjige koje autor jos nema (za izbor pri dodavanju)
+        public List<Knjiga> GetKnjigeKojeNema(int autorId)
+        {
+            List<int> imaIds = _autorKnjigaDao.GetKnjigeIds(autorId);
+            return _knjigaDao.GetAll().Where(k => !imaIds.Contains(k.Id)).ToList();
+        }
+
+        public void DodajKnjigu(int autorId, int knjigaId)
+        {
+            if (_autorDao.GetById(autorId) == null)
+                throw new InvalidOperationException("Autor nije pronađen.");
+            if (_knjigaDao.GetById(knjigaId) == null)
+                throw new InvalidOperationException("Knjiga nije pronađena.");
+            if (_autorKnjigaDao.Add(autorId, knjigaId) == null)
+                throw new InvalidOperationException("Autor već ima ovu knjigu.");
+        }
+
 
         // Veza autor-adresa je 1-1, pa se adresa pravi zajedno sa autorom
         public Autor Add(Autor autor, Adresa adresa)
