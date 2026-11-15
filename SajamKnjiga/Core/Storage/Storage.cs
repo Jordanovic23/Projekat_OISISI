@@ -15,7 +15,7 @@ namespace Core.Storage
         {
             string dataFolder = NadjiDataFolder();
             Directory.CreateDirectory(dataFolder);
-            _filePath = Path.Combine(dataFolder, fileName);
+            _filePath = dataFolder + Path.DirectorySeparatorChar + fileName;
             _serializer = new Serializer<T>();
         }
 
