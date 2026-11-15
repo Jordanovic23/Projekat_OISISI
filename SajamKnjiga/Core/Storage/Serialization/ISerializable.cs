@@ -1,5 +1,6 @@
 ﻿namespace Core.Storage.Serialization
 {
+    // Uzeto po uzoru sa vezbi
     public interface ISerializable
     {
         // Metoda koja pretvara objekat u tekstualni red za CSV fajl

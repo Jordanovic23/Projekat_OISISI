@@ -4,6 +4,8 @@ using System.IO;
 using System.Linq;
 using Core.Storage.Serialization;
 
+// Uzeto po uzoru sa vezbi
+
 namespace Core.Storage
 {
     public class Storage<T> where T : ISerializable, new()
@@ -31,7 +33,7 @@ namespace Core.Storage
 
             // Ako solution nije pronadjen (aplikacija pokrenuta van njega), koristi folder pored .exe
             string koren = dir?.FullName ?? AppContext.BaseDirectory;
-            return Path.Combine(koren, "Data");
+            return koren + Path.DirectorySeparatorChar + "Data";
         }
 
         public List<T> Load()
