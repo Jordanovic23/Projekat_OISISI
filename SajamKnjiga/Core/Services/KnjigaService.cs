@@ -36,6 +36,23 @@ namespace Core.Services
                 .ToList();
         }
 
+        // Autori koji jos nisu na knjizi (za izbor pri dodavanju)
+        public List<Autor> GetAutoriKojiNisuNaKnjizi(int knjigaId)
+        {
+            List<int> naKnjiziIds = _autorKnjigaDao.GetAutoriIds(knjigaId);
+            return _autorDao.GetAll().Where(a => !naKnjiziIds.Contains(a.Id)).ToList();
+        }
+
+        public void DodajAutora(int knjigaId, int autorId)
+        {
+            if (_knjigaDao.GetById(knjigaId) == null)
+                throw new InvalidOperationException("Knjiga nije pronađena.");
+            if (_autorDao.GetById(autorId) == null)
+                throw new InvalidOperationException("Autor nije pronađen.");
+            if (_autorKnjigaDao.Add(autorId, knjigaId) == null)
+                throw new InvalidOperationException("Autor je već dodat na ovu knjigu.");
+        }
+
         public Knjiga Add(Knjiga knjiga)
         {
             if (_izdavacDao.GetById(knjiga.IzdavacId) == null)

@@ -19,7 +19,8 @@ namespace ConsoleClient.Controllers
                 ("Prikaži sve knjige", PrikaziSve),
                 ("Dodaj knjigu", Dodaj),
                 ("Izmeni knjigu", Izmeni),
-                ("Obriši knjigu", Obrisi));
+                ("Obriši knjigu", Obrisi),
+                ("Dodaj autora na knjigu", DodajAutora));
         }
 
         public void PrikaziSve()
@@ -63,6 +64,19 @@ namespace ConsoleClient.Controllers
                 return;
             _servis.Remove(k.Id);
             Console.WriteLine("  Knjiga obrisana.");
+        }
+        private void DodajAutora()
+        {
+            Knjiga k = Izaberi();
+            var dostupni = _servis.GetAutoriKojiNisuNaKnjizi(k.Id);
+            Console.WriteLine("Autori koji još nisu na ovoj knjizi:");
+            KonzolaUtils.Tabela(
+                new[] { "ID", "Ime", "Prezime" },
+                dostupni.Select(a => new[] { a.Id.ToString(), a.Ime, a.Prezime }));
+            if (dostupni.Count == 0) return;
+
+            _servis.DodajAutora(k.Id, KonzolaUtils.Broj("ID autora"));
+            Console.WriteLine("  Autor dodat na knjigu.");
         }
 
         private Knjiga Izaberi()
