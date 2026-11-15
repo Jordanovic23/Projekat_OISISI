@@ -2,6 +2,7 @@
 
 namespace Core.Storage.Serialization
 {
+    // Uzeto po uzoru sa vezbi
     public class Serializer<T> where T : ISerializable, new()
     {
         // 1. Pretvara celu listu objekata u listu tekstualnih linija (za upis u fajl)
